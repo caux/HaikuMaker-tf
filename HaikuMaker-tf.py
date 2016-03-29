@@ -1,30 +1,46 @@
 import numpy as np
 import tensorflow as tf
-import random
+import tensorflow.models.rnn as rnn
 import time
 from os import listdir
 from os.path import isfile, join
-import sys
 
 import Network
 
 
 def main():
     inputSize = 512
+    numOfNeurons = 32
 
     data = readTrainingSet("/Users/caux/Documents/Development/Datasets/Haiku/", inputSize)
 
-    topology = [inputSize, 256, 64, 16, 4]
+    lstm = rnn.rnn_cell.BasicLSTMCell(numOfNeurons)
+    state = tf.zeros([inputSize, lstm.state_size])
 
-    weights, biases = Network.createWeightsAndBiases(topology)
+    loss = 0.0
 
-    x, y, y_, layers = Network.createTrainingTopology(topology, 2, weights, biases)
-    cross_entropy = -tf.reduce_sum(y_*tf.log(y))
-    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+    for current_batch_of_words in data:
+        # The value of state is updated after processing each batch of words.
+        output, state = lstm(current_batch_of_words, state)
 
-    with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
-        train_step.run(feed_dict={x: batch[0], y_: batch[1]})
+        # The LSTM output can be used to make next word predictions
+        logits = tf.matmul(output, softmax_w) + softmax_b
+        probabilities = tf.nn.softmax(logits)
+        loss += loss_function(probabilities, target_words)
+
+
+
+    # topology = [inputSize, 256, 64, 16, 4]
+    #
+    # weights, biases = Network.createWeightsAndBiases(topology)
+    #
+    # x, y, y_, layers = Network.createTrainingTopology(topology, 2, weights, biases)
+    # cross_entropy = -tf.reduce_sum(y_*tf.log(y))
+    # train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+    #
+    # with tf.Session() as sess:
+    #     sess.run(tf.initialize_all_variables())
+    #     train_step.run(feed_dict={x: batch[0], y_: batch[1]})
 
 
 def readTrainingSet(path, inputSize):
