@@ -14,13 +14,11 @@ def main():
 
     data = readTrainingSet("/Users/caux/Documents/Development/Datasets/Haiku/", inputSize)
 
-    print data
-
     topology = [inputSize, 256, 64, 16, 4]
 
     weights, biases = Network.createWeightsAndBiases(topology)
 
-    x, y, y_, layers = Network.createTrainingTopology()
+    x, y, y_, layers = Network.createTrainingTopology(topology, 2, weights, biases)
     cross_entropy = -tf.reduce_sum(y_*tf.log(y))
     train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
@@ -47,7 +45,6 @@ def readTrainingSet(path, inputSize):
             for indexChar in range(len(haikuData)):
                 data[indexFile][indexChar] = float(ord(haikuData[indexChar])) / 255.0
 
-    print data.shape
     return data
 
 

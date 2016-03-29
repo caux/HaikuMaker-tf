@@ -35,6 +35,7 @@ def createTrainingTopology(topology, levels, weights, biases):
     y_ = tf.placeholder(tf.float32, shape=[None, numOutputs])
 
     previousOutput = x
+
     for index in range(levels - 1):
         layerNode = tf.tanh(tf.matmul(previousOutput, weights[index]) + biases[index])
 
@@ -42,10 +43,13 @@ def createTrainingTopology(topology, levels, weights, biases):
         previousOutput = layerNode
 
     for index in reversed(range(levels - 1)):
-        layerNode = tf.tanh(tf.matmul(previousOutput, weights[index]) + biases[index])
+        print previousOutput.get_shape()
+        print tf.transpose(weights[index]).get_shape()
+        layerNode = tf.tanh(tf.matmul((previousOutput + biases[index]), tf.transpose(weights[index])))
 
         layers.append(layerNode)
         previousOutput = layerNode
+
 
     y = previousOutput
 
