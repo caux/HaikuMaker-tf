@@ -11,10 +11,11 @@ import Network
 
 def main():
     inputSize = 512
+    batch_size = 50
 
     data = readTrainingSet("/Users/caux/Documents/Development/Datasets/Haiku/", inputSize)
 
-    topology = [inputSize, 256, 64, 16, 4]
+    topology = [inputSize, 32, 64, 16, 4]
 
     weights, biases = Network.createWeightsAndBiases(topology)
 
@@ -24,8 +25,16 @@ def main():
 
     with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
-        train_step.run(feed_dict={x: batch[0], y_: batch[1]})
 
+        for reps in range(10):
+            for index in range(0, len(data), batch_size):
+                batch = data[index:index+batch_size]
+                train_step.run(feed_dict={x: batch, y_: batch})
+
+
+        correct_prediction = tf.equal(y, y_)
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        print(accuracy.eval(feed_dict={x: data, y_: data}))
 
 def readTrainingSet(path, inputSize):
     fileList = []

@@ -37,7 +37,7 @@ def createTrainingTopology(topology, levels, weights, biases):
     previousOutput = x
 
     for index in range(levels - 1):
-        layerNode = tf.tanh(tf.matmul(previousOutput, weights[index]) + biases[index])
+        layerNode = tf.nn.softmax(tf.matmul(previousOutput, weights[index]) + biases[index])
 
         layers.append(layerNode)
         previousOutput = layerNode
@@ -45,7 +45,7 @@ def createTrainingTopology(topology, levels, weights, biases):
     for index in reversed(range(levels - 1)):
         print previousOutput.get_shape()
         print tf.transpose(weights[index]).get_shape()
-        layerNode = tf.tanh(tf.matmul((previousOutput + biases[index]), tf.transpose(weights[index])))
+        layerNode = tf.nn.softmax(tf.matmul(previousOutput - biases[index], tf.transpose(weights[index])))
 
         layers.append(layerNode)
         previousOutput = layerNode
