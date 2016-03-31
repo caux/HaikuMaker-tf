@@ -14,19 +14,19 @@ def main():
 
     data = readTrainingSet("/Users/caux/Documents/Development/Datasets/Haiku/", inputSize)
 
-    lstm = rnn.rnn_cell.BasicLSTMCell(numOfNeurons)
-    state = tf.zeros([inputSize, lstm.state_size])
-
-    loss = 0.0
-
-    for current_batch_of_words in data:
-        # The value of state is updated after processing each batch of words.
-        output, state = lstm(current_batch_of_words, state)
-
-        # The LSTM output can be used to make next word predictions
-        logits = tf.matmul(output, softmax_w) + softmax_b
-        probabilities = tf.nn.softmax(logits)
-        loss += loss_function(probabilities, target_words)
+    # lstm = rnn.rnn_cell.BasicLSTMCell(numOfNeurons)
+    # state = tf.zeros([inputSize, lstm.state_size])
+    #
+    # loss = 0.0
+    #
+    # for current_batch_of_words in data:
+    #     # The value of state is updated after processing each batch of words.
+    #     output, state = lstm(current_batch_of_words, state)
+    #
+    #     # The LSTM output can be used to make next word predictions
+    #     logits = tf.matmul(output, softmax_w) + softmax_b
+    #     probabilities = tf.nn.softmax(logits)
+    #     loss += loss_function(probabilities, target_words)
 
 
 
@@ -57,6 +57,13 @@ def readTrainingSet(path, inputSize):
     for indexFile in range(len(fileList)):
         with open(fileList[indexFile], 'r') as haikuFile:
             haikuData = haikuFile.read()
+
+            haikuData = haikuData.replace("\r\n", "\n")
+            haikuData = haikuData.split("\n\n")[0]
+
+            print haikuData
+            print
+            print
 
             for indexChar in range(len(haikuData)):
                 data[indexFile][indexChar] = float(ord(haikuData[indexChar])) / 255.0
